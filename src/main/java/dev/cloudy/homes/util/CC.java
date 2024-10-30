@@ -3,6 +3,9 @@ package dev.cloudy.homes.util;
 import lombok.experimental.UtilityClass;
 import org.bukkit.ChatColor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Emmy
  * @project Homes
@@ -19,5 +22,15 @@ public class CC {
      */
     public String translate(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
+    }
+
+    public List<String> translate(String... messages) {
+        List<String> translated = new ArrayList<>();
+
+        for (String message : messages) {
+            translated.add(translate(message));
+        }
+
+        return translated;
     }
 }
