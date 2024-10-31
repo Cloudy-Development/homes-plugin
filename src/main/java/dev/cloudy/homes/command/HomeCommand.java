@@ -1,7 +1,6 @@
 package dev.cloudy.homes.command;
 
 import dev.cloudy.homes.Homes;
-import dev.cloudy.homes.object.Cooldown;
 import dev.cloudy.homes.object.Home;
 import dev.cloudy.homes.util.CC;
 import dev.cloudy.homes.util.CharUtil;
@@ -46,7 +45,7 @@ public class HomeCommand implements CommandExecutor {
             Player player = (Player) sender;
             String name = strings[1];
 
-            if (name.contains(Arrays.stream(CharUtil.nonAllowedChars).toString())) {
+            if (Arrays.stream(CharUtil.nonAllowedChars).anyMatch(name::contains)) {
                 player.sendMessage(CC.translate("&cYou cannot use special characters in the home name!"));
                 return true;
             }
@@ -69,7 +68,7 @@ public class HomeCommand implements CommandExecutor {
                 return true;
             }
 
-            Homes.getInstance().getHomeRepository().removeHome(player, home);
+            Homes.getInstance().getHomeRepository().deleteHome(player, home);
             player.sendMessage(CC.translate("&aYou have successfully deleted the home with the name &e" + name + "&a!"));
             return true;
         } else if (strings[0].equalsIgnoreCase("list")) {
@@ -101,18 +100,7 @@ public class HomeCommand implements CommandExecutor {
                 return true;
             }
 
-            if (!Homes.getInstance().getCooldownRepository().isOnCooldown(player)) {
-                Cooldown cooldown = new Cooldown(player, 600000L);
-                Homes.getInstance().getCooldownRepository().addCooldown(cooldown);
-
-                player.sendMessage(CC.translate("&cYou are now on a cooldown of 10 minutes before you can teleport to another home."));
-            } else {
-                player.sendMessage(CC.translate("&cPlease wait before teleporting again. (" + Homes.getInstance().getCooldownRepository().getCooldown(player).getRemainingFormatted() + "s)"));
-                return true;
-            }
-
-            player.teleport(home.getLocation());
-            player.sendMessage(CC.translate("&aYou have successfully teleported to the home with the name &e" + name + "&a!"));
+            if (Homes.getInstance().getHomeRepository().teleportToHome(player, home)) return true;
             return true;
         }
 

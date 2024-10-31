@@ -6,6 +6,7 @@ import dev.cloudy.homes.repository.HomeRepository;
 import dev.cloudy.homes.command.HomeCommand;
 import dev.cloudy.homes.command.HomesCommand;
 import dev.cloudy.homes.util.CC;
+import dev.cloudy.homes.util.menu.listener.MenuListener;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -34,6 +35,8 @@ public class Homes extends JavaPlugin {
         this.getCommand("home").setExecutor(new HomeCommand());
         this.getCommand("homes").setExecutor(new HomesCommand());
         this.getCommand("expirecooldown").setExecutor(new ExpireCooldownCommand());
+
+        this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
         List<String> messages = Arrays.asList(
                 "&aHomes plugin has been enabled!",

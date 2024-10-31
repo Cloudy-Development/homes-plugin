@@ -1,5 +1,6 @@
 package dev.cloudy.homes.command;
 
+import dev.cloudy.homes.menu.HomesMenu;
 import dev.cloudy.homes.util.CC;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,8 +22,7 @@ public class HomesCommand implements CommandExecutor {
 
         Player player = (Player) commandSender;
 
-        // open menu
-        player.sendMessage(CC.translate("&cEmmy was lazy to do this yet so fuck off"));
+        new HomesMenu().openMenu(player);
         return true;
     }
 }

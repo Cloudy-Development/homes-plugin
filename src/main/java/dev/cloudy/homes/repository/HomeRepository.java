@@ -1,6 +1,7 @@
 package dev.cloudy.homes.repository;
 
 import dev.cloudy.homes.Homes;
+import dev.cloudy.homes.object.Cooldown;
 import dev.cloudy.homes.object.Home;
 import dev.cloudy.homes.util.CC;
 import lombok.Getter;
@@ -66,7 +67,7 @@ public class HomeRepository {
      * @return the homes of the player
      */
     public List<Home> getHomes(Player player) {
-        return homes.getOrDefault(player.getUniqueId(), new ArrayList<>());
+        return homes.get(player.getUniqueId());
     }
 
     /**
@@ -87,7 +88,7 @@ public class HomeRepository {
      * @param player the player to remove the home of
      * @param home   the home to remove
      */
-    public void removeHome(Player player, Home home) {
+    public void deleteHome(Player player, Home home) {
         this.homes.get(player.getUniqueId()).remove(home);
 
         FileConfiguration config = Homes.getInstance().getConfig();
@@ -172,5 +173,27 @@ public class HomeRepository {
         config.set("homes." + uuid + "." + homeName + ".location.pitch", home.getLocation().getPitch());
 
         Homes.getInstance().saveConfig();
+    }
+
+    /**
+     * Teleport the player to the home
+     *
+     * @param player the player to teleport
+     * @param home   the home to teleport to
+     * @return if the player is on cooldown
+     */
+    public boolean teleportToHome(Player player, Home home) {
+        if (!Homes.getInstance().getCooldownRepository().isOnCooldown(player)) {
+            Cooldown cooldown = new Cooldown(player, 600000L);
+            Homes.getInstance().getCooldownRepository().addCooldown(cooldown);
+            player.sendMessage(CC.translate("&aYou have been teleported to your home &e" + home.getName() + "&a!"));
+            player.sendMessage(CC.translate("&cYou are now on a cooldown of 10 minutes before you can teleport to another home."));
+        } else {
+            player.sendMessage(CC.translate("&cPlease wait before teleporting again. (" + Homes.getInstance().getCooldownRepository().getCooldown(player).getRemainingFormatted() + "s)"));
+            return true;
+        }
+
+        player.teleport(home.getLocation());
+        return false;
     }
 }
