@@ -1,4 +1,4 @@
-package dev.cloudy.homes.system;
+package dev.cloudy.homes.object;
 
 import lombok.Getter;
 import lombok.Setter;

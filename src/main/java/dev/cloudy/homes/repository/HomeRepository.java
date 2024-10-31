@@ -1,6 +1,8 @@
-package dev.cloudy.homes.system;
+package dev.cloudy.homes.repository;
 
 import dev.cloudy.homes.Homes;
+import dev.cloudy.homes.object.Home;
+import dev.cloudy.homes.util.CC;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,10 +20,10 @@ import java.util.UUID;
  * @date 30/10/2024 - 22:26
  */
 @Getter
-public class HomeProvider {
+public class HomeRepository {
     private final HashMap<UUID, List<Home>> homes;
 
-    public HomeProvider() {
+    public HomeRepository() {
         this.homes = new HashMap<>();
         this.loadHomes();
     }
@@ -29,11 +31,15 @@ public class HomeProvider {
     public void loadHomes() {
         FileConfiguration config = Homes.getInstance().getConfig();
 
+        if (!config.contains("homes")) {
+            Bukkit.getConsoleSender().sendMessage(CC.translate("&cNo homes found in the configuration file!"));
+            return;
+        }
+
         for (String uuid : config.getConfigurationSection("homes").getKeys(false)) {
             List<Home> playerHomes = new ArrayList<>();
 
             for (String home : config.getConfigurationSection("homes." + uuid).getKeys(false)) {
-                String name = config.getString("homes." + uuid + "." + home + ".name");
                 String world = config.getString("homes." + uuid + "." + home + ".location.world");
                 double x = config.getDouble("homes." + uuid + "." + home + ".location.x");
                 double y = config.getDouble("homes." + uuid + "." + home + ".location.y");
@@ -42,7 +48,7 @@ public class HomeProvider {
                 float pitch = (float) config.getDouble("homes." + uuid + "." + home + ".location.pitch");
 
                 Location location = new Location(Homes.getInstance().getServer().getWorld(world), x, y, z, yaw, pitch);
-                playerHomes.add(new Home(name, world, location));
+                playerHomes.add(new Home(home, world, location));
             }
 
             homes.put(UUID.fromString(uuid), playerHomes);
@@ -158,7 +164,6 @@ public class HomeProvider {
         String uuid = player.getUniqueId().toString();
         String homeName = home.getName();
 
-        config.set("homes." + uuid + "." + homeName + ".name", home.getName());
         config.set("homes." + uuid + "." + homeName + ".location.world", home.getLocation().getWorld().getName());
         config.set("homes." + uuid + "." + homeName + ".location.x", home.getLocation().getX());
         config.set("homes." + uuid + "." + homeName + ".location.y", home.getLocation().getY());

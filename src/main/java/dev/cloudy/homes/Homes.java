@@ -1,6 +1,10 @@
 package dev.cloudy.homes;
 
-import dev.cloudy.homes.system.HomeProvider;
+import dev.cloudy.homes.command.ExpireCooldownCommand;
+import dev.cloudy.homes.repository.CooldownRepository;
+import dev.cloudy.homes.repository.HomeRepository;
+import dev.cloudy.homes.command.HomeCommand;
+import dev.cloudy.homes.command.HomesCommand;
 import dev.cloudy.homes.util.CC;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -15,14 +19,21 @@ public class Homes extends JavaPlugin {
     @Getter
     private static Homes instance;
 
-    private HomeProvider homeProvider;
+    private HomeRepository homeRepository;
+    private CooldownRepository cooldownRepository;
 
     @Override
     public void onEnable() {
         instance = this;
         saveDefaultConfig();
 
-        this.homeProvider = new HomeProvider();
+        this.homeRepository = new HomeRepository();
+        this.cooldownRepository = new CooldownRepository();
+        this.cooldownRepository.expireAsynchronously();
+
+        this.getCommand("home").setExecutor(new HomeCommand());
+        this.getCommand("homes").setExecutor(new HomesCommand());
+        this.getCommand("expirecooldown").setExecutor(new ExpireCooldownCommand());
 
         List<String> messages = Arrays.asList(
                 "&aHomes plugin has been enabled!",

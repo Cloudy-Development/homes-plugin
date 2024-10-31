@@ -3,3 +3,7 @@ version: '${project.version}'
 main: dev.cloudy.homes.Homes
 author: Emmy
 description: A simple homes plugin
+commands:
+  home:
+  homes:
+  expirecooldown:
