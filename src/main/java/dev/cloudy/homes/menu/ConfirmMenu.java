@@ -25,6 +25,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class ConfirmMenu extends Menu {
     private Home home;
+    
     @Override
     public String getTitle(Player player) {
         return "Delete your home?";
